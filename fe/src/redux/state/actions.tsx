@@ -1,3 +1,5 @@
+import { io } from "socket.io-client";
+import { serverConfig } from "../../const";
 const types = {
   IS_lOGIN: "state/is_login",
   IS_LOADING: "state/is_loading",
@@ -5,6 +7,7 @@ const types = {
   KEYS_OPEN: "state/keys_open",
   SET_NAVIGATE: "/set-navigate",
   REDIRECT_ACTION: "/redirect-action",
+  INIT_SOCKET: "/init-socket",
 };
 
 const action = {
@@ -41,6 +44,12 @@ const action = {
   redirectAction: () => {
     return {
       type: types.REDIRECT_ACTION,
+    };
+  },
+  initSocket: () => {
+    return {
+      type: types.INIT_SOCKET,
+      payload: { socket: io(serverConfig.server) },
     };
   },
 };

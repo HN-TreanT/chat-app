@@ -1,0 +1,31 @@
+.input-chat{
+    padding: 10px;
+    // background-color:red;
+   // position: fixed;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    .input{
+        outline: none;
+        border: none;
+       width: 100%; 
+       background-color: rgba(0, 0, 0, 0.048);
+       padding:7px 10px 7px 10px;
+       border-radius: 15px; 
+       width: 100%;
+       background-color: rgba(0, 0, 0, 0.048);
+    }
+    
+    .icon{
+       padding: 7px;
+       color: #0084FF;
+       cursor: pointer;
+       &:hover{
+        background-color: rgba(0, 0, 0, 0.048);
+        border-radius: 50%; 
+       }
+    }
+   
+}

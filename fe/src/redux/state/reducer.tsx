@@ -44,6 +44,11 @@ const StateReducer = (state: any = initState, action: any) => {
       return {
         ...state,
       };
+    case actions.types.INIT_SOCKET:
+      return {
+        ...state,
+        socket: action.payload.socket,
+      };
     default:
       return state;
   }
