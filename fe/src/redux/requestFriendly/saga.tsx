@@ -1,8 +1,8 @@
 import { all, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import { notification } from "../../components/notification";
 import stateActions from "../state/actions";
+import { friendRequestServices } from "../../utils/services/FriendRequest";
 import actions from "./actions";
-import { authServices } from "../../utils/services/authService";
 function* handleFail(message: any) {
   yield put(stateActions.action.loadingState(false));
   notification({
@@ -23,6 +23,22 @@ function* handleErr(err: any) {
   });
 }
 
+function* loadData() {
+  try {
+    yield put(stateActions.action.loadingState(true));
+    let _request: Promise<any> = yield friendRequestServices.getRequest(1, 5);
+    let request: any = _request;
+    if (request.status) {
+      yield put(actions.action.loadDataSuccess(request.data));
+    } else {
+      yield put(actions.action.loadDataSuccess([]));
+    }
+    yield put(stateActions.action.loadingState(false));
+  } catch (err: any) {
+    console.log(err);
+  }
+}
+
 function* saga_Redirect() {
   //action.type.
   let _navigate: Promise<any> = yield select((state: any) => state.state.navigate);
@@ -32,23 +48,12 @@ function* saga_Redirect() {
   }
 }
 
-function* saga_loadFriends() {
-  let _userInfo: Promise<any> = yield select((state: any) => state.auth.userInfo);
-  let userInfo: any = _userInfo;
-  yield put(stateActions.action.loadingState(true));
-
-  let _friends: Promise<any> = yield authServices.getFriends(userInfo._id, 1, 10);
-  let friends: any = _friends;
-  yield put(actions.action.loadFriendSuccess(friends.data));
-  yield put(stateActions.action.loadingState(false));
-}
-
 function* saga_RedirectAction() {
   yield saga_Redirect();
 }
 function* listen() {
   //  yield takeEvery(actions.types.LOAD_DATA, saga_loadData);
-  yield takeEvery(actions.types.LOAD_FRIEND, saga_loadFriends);
+  yield takeEvery(actions.types.LOAD_DATA, loadData);
 }
 
 export default function* mainSaga() {

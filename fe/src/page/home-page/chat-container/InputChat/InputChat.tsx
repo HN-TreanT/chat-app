@@ -2,28 +2,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { Input, Tooltip } from "antd";
 import { faPaperPlane, faFaceSmile, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import useAction from "../../../../redux/useActions";
-// import { useDispatch, useSelector } from "react-redux";
-import { io } from "socket.io-client";
-import { serverConfig } from "../../../../const";
+import { useSelector, useDispatch } from "react-redux";
+import useAction from "../../../../redux/useActions";
+
 import "./InputChat.scss";
-const socket = io(serverConfig.socketServer);
-const InputChat: React.FC = () => {
-  // const actions = useAction();
-  // const dispatch = useDispatch()
-  // console.log(socket);
-  // useEffect(() => {
-  //   socket.emit("send");
-  // }, []);
-  // socket.emit("send");
+// const socket = io(serverConfig.server);
+const InputChat: React.FC<any> = ({ socket }) => {
+  const actions = useAction();
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state: any) => state.auth.userInfo);
+  const conversation = useSelector((state: any) => state.auth.conversation);
+  const userSelected = useSelector((state: any) => state.auth.userSelected);
   const [message, setMessage] = useState();
   const handleChangeInput = (e: any) => {
     setMessage(e.target.value);
   };
   const handleSendMessage = () => {
-    console.log(message);
-    socket.emit("send", {
+    socket.current.emit("send_message", {
+      conversation_id: conversation?._id,
+      to: userInfo?._id,
+      from: userSelected?._id,
       message: message,
+      type: "Text",
     });
   };
   return (

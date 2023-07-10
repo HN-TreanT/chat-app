@@ -1,0 +1,32 @@
+.item-friend{   
+    // color: rgba(0, 0, 0, 0.473);
+    display: flex;
+    align-items: center;  
+    padding: 9px 5px 9px 5px;
+    border-radius: 10px;
+    cursor: pointer;
+        .status{
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: absolute;
+            border: 1px solid white;
+            top: 25px;
+            right: 0;
+           // background-color: greenyellow;
+          }
+          .status-online{
+            background-color: greenyellow;
+          }
+          .status-offline{
+            background-color: red;
+          }
+
+  .text-status{
+    padding-left: 5px;
+
+  }
+  &:hover{
+    background-color: rgba(0, 0, 0, 0.089);    
+  }
+}

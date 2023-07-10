@@ -16,9 +16,9 @@ const handleRegister = (data: any) => {
   });
 };
 
-const getAll = () => {
+const getAll = (page: any, pageSize: any) => {
   return api.makeRequest({
-    url: "/api/auth",
+    url: `/api/auth?page=${page}&pageSize=${pageSize}`,
     method: "GET",
   });
 };
@@ -29,10 +29,17 @@ const getByEmail = (email: any) => {
     method: "GET",
   });
 };
+const getFriends = (id: any, page: any, pageSize: any) => {
+  return api.makeRequest({
+    url: `/api/auth/getfriend/listFriend?id=${id}&page=${page}&pageSize=${pageSize}`,
+    method: "GET",
+  });
+};
 
 export const authServices = {
   handleLogin,
   handleRegister,
   getAll,
   getByEmail,
+  getFriends,
 };

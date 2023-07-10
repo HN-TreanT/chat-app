@@ -46,7 +46,7 @@ const action = {
       type: types.REDIRECT_ACTION,
     };
   },
-  initSocket: () => {
+  initSocket: (data: any) => {
     return {
       type: types.INIT_SOCKET,
       payload: { socket: io(serverConfig.server) },

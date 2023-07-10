@@ -23,12 +23,23 @@
                     border: 1px solid white;
                     top: 25px;
                     right: 0;
+                   // background-color: greenyellow;
+                  }
+                  .status-online{
                     background-color: greenyellow;
+                  }
+                  .status-offline{
+                    background-color: red;
                   }
     
           .text-status{
             padding-left: 5px;
     
+          }
+          .icon-arrow-back{
+            color: rgba(0, 0, 0, 0.562);
+            padding-right: 5px;
+            cursor: pointer;
           }
         }
         .other-method-conversation{
