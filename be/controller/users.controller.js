@@ -18,7 +18,19 @@ let hashUserPassword = (password) => {
   });
 };
 const getAll = async (req, res) => {
-  const users = await User.find();
+  let pageSize;
+  let page;
+  pageSize = req.query.pageSize;
+  page = req.query.page;
+  if (!req.query.pageSize || !req.query.page) {
+    pageSize = 1000;
+    page = 1;
+  }
+
+  const users = await User.find()
+    .skip(pageSize * (page - 1))
+    .limit(pageSize);
+
   return responseSuccessWithData({ res, data: users });
 };
 const getUserById = async (req, res) => {
@@ -50,7 +62,7 @@ const register = async (req, res) => {
     });
 
     await newUsers.save();
-    return reponseSuccess({ res });
+    return responseSuccessWithData({ res, data: newUsers });
     // const newuser = await User.create()
   } catch (err) {
     return responseServerError({ res, err: err.message });
@@ -72,7 +84,7 @@ const login = async (req, res) => {
     }
     let check = await bcrypt.compareSync(password, user.password);
     if (check) {
-      return reponseSuccess({ res });
+      return responseSuccessWithData({ res, data: user });
     } else {
       return responseInValid({ res, message: "password incorrect" });
     }
@@ -80,10 +92,24 @@ const login = async (req, res) => {
     return responseServerError({ res, err: err.message });
   }
 };
-
+const getListFriend = async (req, res) => {
+  let pageSize;
+  let page;
+  pageSize = req.query.pageSize;
+  page = req.query.page;
+  if (!req.query.pageSize || !req.query.page) {
+    pageSize = 1000;
+    page = 1;
+  }
+  const friends = await User.find({ friends: req.query.id })
+    .skip(pageSize * (page - 1))
+    .limit(pageSize);
+  return responseSuccessWithData({ res, data: friends });
+};
 module.exports = {
   getAll,
   register,
   login,
   getUserById,
+  getListFriend,
 };

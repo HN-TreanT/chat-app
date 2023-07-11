@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Button, Divider, Form, Input, Typography } from "antd";
 import { Link } from "react-router-dom";
 import {
@@ -14,9 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { authServices } from "../../utils/services/authService";
 import { notification } from "../../components/notification";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../context/appContext";
 import { io } from "socket.io-client";
 import { serverConfig } from "../../const";
 const LoginPage: React.FC = () => {
+  const { socket } = useContext(AppContext);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const actions = useAction();
@@ -24,10 +26,14 @@ const LoginPage: React.FC = () => {
   const handleValueChange = () => {
     // console.log(form.getFieldsValue());
   };
+
   const handleLogin = async () => {
     try {
       const message = await authServices.handleLogin(form.getFieldsValue());
       if (message.status) {
+        socket.io.opts.query = { username: message?.data?.username };
+        socket.disconnect();
+        socket.connect();
         localStorage.setItem("username", message?.data?.username);
         dispatch(actions.AuthActions.setuserInfo(message.data));
         dispatch(actions.StateAction.loginState(true));

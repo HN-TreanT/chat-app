@@ -8,10 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 import useAction from "../../../redux/useActions";
 import "./sidebar.scss";
 import { AppContext } from "../../../context/appContext";
-import { Socket } from "socket.io-client";
 
-const Sidebar: React.FC<any> = ({ handleDetailConversation, socket }) => {
-  const { socket1 } = useContext(AppContext);
+const Sidebar: React.FC<any> = ({ handleDetailConversation }) => {
+  const { socket } = useContext(AppContext);
   const dispatch = useDispatch();
   const actions = useAction();
   const loading = useSelector((state: any) => state.state.loadingState);
@@ -29,53 +28,22 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, socket }) => {
   useEffect(() => {
     dispatch(actions.AuthActions.loadFriend());
   }, [dispatch, actions.AuthActions]);
-  // useEffect(() => {
-  //   // if (socket.current) {
-  //   // socket.current.on("received_friendly_request", function (data: any) {
-  //   //   if (data) {
-  //   //     setIsOpenModelMail(true);
-  //   //     setSender(data?.user);
-  //   //   }
-  //   // });
-  //   socket1.on("received_friendly_request", function (data: any) {
-  //     console.log(data);
-  //     if (data) {
-  //       setIsOpenModelMail(true);
-  //       setSender(data?.user);
-  //     }
-  //   });
-  //   // socket.current.on("user_online", function (data: any) {
-  //   //   console.log(data);
-  //   // });
-  //   // }
-  // }, [socket1]);
-
-  // useEffect(() => {
-  //   //if (socket.current) {
-  //   socket.current.on("received_friendly_request", (data: any) => {
-  //     console.log("check useeff", data);
-  //     if (data) {
-  //       setIsOpenModelMail(true);
-  //       setSender(data?.user);
-  //     }
-  //   });
-  //   //}
-  // }, [socket]);
   const handleChangeInputSearchEmail = (e: any) => {
     setValueSearchEamil(e.target.value);
   };
+  //handle send request
   const handleSendRequestFriend = async () => {
-    // socket.current.emit("send_friendly_request", {
-    //   sender: me._id,
-    //   recipient: userWantFriendLy._id,
-    // });
-    socket1.emit("send_friendly_request", {
+    socket.emit("send_friendly_request", {
       sender: me._id,
       recipient: userWantFriendLy._id,
     });
   };
-  socket1.off("received_friendly_request").on("received_friendly_request", (data: any) => {
-    console.log(data);
+  // handle recieived friendly request
+  socket.off("received_friendly_request").on("received_friendly_request", (data: any) => {
+    if (data) {
+      setIsOpenModelMail(true);
+      setSender(data?.user);
+    }
   });
   const handleClickSearch = async () => {
     try {
@@ -91,8 +59,9 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, socket }) => {
       console.log(err);
     }
   };
+  //handle accept request
   const handleAcceptRequest = () => {
-    socket.current.emit("accept_friendly_request", {
+    socket.emit("accept_friendly_request", {
       sender: sender?._id,
       recipient: me?._id,
     });
@@ -223,6 +192,7 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, socket }) => {
             <Input
               placeholder="Tìm kiếm bạn bè"
               prefix={<FontAwesomeIcon className="icon-search" icon={faMagnifyingGlass} />}
+              // style={{ backgroundColor: "black" }}
               className="input-search"
             ></Input>
           </Col>
@@ -245,10 +215,14 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, socket }) => {
       </div>
       <div className="footer-sidebar">
         <div>
-          <Avatar src={me?.avatarImage} size={33}>
+          <Avatar
+            style={{ backgroundColor: "rgba(148, 146, 146, 0.116)" }}
+            src={me?.avatarImage}
+            size={33}
+          >
             {me?.displayName ? me?.displayName.charAt(0).toUpperCase() : "A"}{" "}
           </Avatar>
-          <span style={{ fontSize: "0.6rem", fontWeight: 550, marginLeft: "7px" }}>
+          <span style={{ fontSize: "0.6rem", fontWeight: 550, marginLeft: "7px", color: "white" }}>
             {me?.displayName}
           </span>
         </div>

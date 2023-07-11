@@ -11,6 +11,7 @@
             border-radius: 50%;
             position: absolute;
             border: 1px solid white;
+          // color: rgba(255, 255, 255, 0.466);
             top: 25px;
             right: 0;
            // background-color: greenyellow;
@@ -24,9 +25,10 @@
 
   .text-status{
     padding-left: 5px;
+    color: white;
 
   }
   &:hover{
-    background-color: rgba(0, 0, 0, 0.089);    
+    background-color: rgba(148, 146, 146, 0.116);    
   }
 }

@@ -15,7 +15,7 @@ const ItemFriend: React.FC<any> = ({ friend, handleDetailConversation }) => {
     <div onClick={() => handleDetailConversation(friend)} className="item-friend">
       <Badge className="badge">
         {/* <Avatar size={35} /> */}
-        <Avatar size={35}>
+        <Avatar style={{ backgroundColor: "rgba(148, 146, 146, 0.116)" }} size={35}>
           {friend.displayName ? friend.displayName.charAt(0).toUpperCase() : "A"}{" "}
         </Avatar>
         <span
@@ -28,7 +28,7 @@ const ItemFriend: React.FC<any> = ({ friend, handleDetailConversation }) => {
         <div
           style={{
             fontSize: "0.7rem",
-            color: "rgba(0, 0, 0, 0.473)",
+            color: "rgba(255, 255, 255, 0.466)",
           }}
         >
           {" "}

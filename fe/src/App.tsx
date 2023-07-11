@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import "react-notifications-component/dist/theme.css";
@@ -10,14 +10,16 @@ import LoginPage from "./page/login-page/loginPage";
 import RegisterPage from "./page/register-page/registerPage";
 import HomePage from "./page/home-page/HomePage";
 import { AuthorizationComponent } from "./components/authorization/AuthorizationComponent";
-import { socket1, AppContext } from "./context/appContext";
+import { socket, AppContext } from "./context/appContext";
 function App() {
+  const [messages, setMessages] = useState([]);
   return (
     <>
       <ReactNotifications />
-      <AppContext.Provider value={{ socket1 }}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
+
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <AppContext.Provider value={{ socket, messages, setMessages }}>
             <div className="MainApp">
               <div className="MainContent">
                 <div className="ContentPage">
@@ -33,9 +35,9 @@ function App() {
                 </div>
               </div>
             </div>
-          </PersistGate>
-        </Provider>
-      </AppContext.Provider>
+          </AppContext.Provider>
+        </PersistGate>
+      </Provider>
     </>
   );
 }

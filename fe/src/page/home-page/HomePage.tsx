@@ -1,19 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Row, Col } from "antd";
 import Sidebar from "./sidebar/sidebar";
 import ChatContainer from "./chat-container/ChatContainer";
 import "./HomePage.scss";
 import { useSelector, useDispatch } from "react-redux";
 import useAction from "../../redux/useActions";
-import { serverConfig } from "../../const";
-import { io } from "socket.io-client";
+import { AppContext } from "../../context/appContext";
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
   const actions = useAction();
   const [colSpan, setColSpan] = useState(window.innerWidth < 768 ? 24 : 6);
   const [spanConversation, setSpanConversation] = useState(18);
   const me = useSelector((state: any) => state.auth.userInfo);
-  const socket = useRef<any>();
+  const { socket, messages, setMessages } = useContext(AppContext);
+  useEffect(() => {
+    socket.io.opts.query = { username: me?.username };
+    socket.disconnect();
+    socket.connect();
+  }, [me?.username, socket]);
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -24,28 +28,13 @@ const HomePage: React.FC = () => {
         setSpanConversation(18);
       }
     };
-
     // Gọi hàm handleResize khi kích thước màn hình thay đổi
     window.addEventListener("resize", handleResize);
-
     // Xóa event listener khi component bị hủy
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  //socket
-  useEffect(() => {
-    socket.current = io(serverConfig.server, {
-      query: {
-        user_id: me._id,
-      },
-    });
-  }, [me]);
-  useEffect(() => {
-    socket.current.on("start_chat", function (data: any) {
-      dispatch(actions.AuthActions.setConversation(data));
-    });
-  }, [actions.AuthActions, dispatch]);
   const handleBackListFriend = () => {
     setColSpan(24);
     setSpanConversation(18);
@@ -55,12 +44,16 @@ const HomePage: React.FC = () => {
       setColSpan(0);
       setSpanConversation(24);
     }
-    socket.current.emit("start_conversation", {
+    socket.emit("start_conversation", {
       to: me._id,
       from: e._id,
     });
     dispatch(actions.AuthActions.setUserSelected(e));
   };
+  socket.off("start_chat").on("start_chat", (data: any) => {
+    dispatch(actions.AuthActions.setConversation(data));
+    setMessages(data.messages);
+  });
   return (
     <div className="home-page">
       <Row gutter={[0, 0]}>

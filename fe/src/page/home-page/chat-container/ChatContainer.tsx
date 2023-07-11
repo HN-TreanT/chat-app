@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Message from "../../../components/Message/Message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone, faVideo, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -6,24 +6,28 @@ import { Avatar, Badge } from "antd";
 import InputChat from "./InputChat/InputChat";
 import useAction from "../../../redux/useActions";
 import { useDispatch, useSelector } from "react-redux";
+import { AppContext } from "../../../context/appContext";
 import * as uuid from "uuid";
 import "./ChatContainer.scss";
-const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile, socket }) => {
+const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
+  const { socket, messages, setMessages } = useContext(AppContext);
   const dispatch = useDispatch();
   const actions = useAction();
   const userInfo = useSelector((state: any) => state.auth.userInfo);
-  const conversation = useSelector((state: any) => state.auth.conversation);
-  const [messages, setMessages] = useState(conversation.messages);
+  // const conversation = useSelector((state: any) => state.auth.conversation);
+  // const [messages, setMessages] = useState<any>(conversation.messages);
   const userSelected = useSelector((state: any) => state.auth.userSelected);
+  const messageEndRef = useRef<any>(null);
+  socket.off("new_message").on("new_message", function (data: any) {
+    // setMessages([...messages, data.message]);
+    setMessages([...messages, data.message]);
+  });
   useEffect(() => {
-    if (socket.current) {
-      socket.current.on("new_message", function (data: any) {
-        conversation.messages.push(data.message);
-        console.log(conversation);
-        dispatch(actions.AuthActions.setConversation(conversation));
-      });
-    }
-  }, [actions.AuthActions, conversation, conversation.messages, dispatch, socket]);
+    scrollToBottom();
+  }, [messages]);
+  function scrollToBottom() {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   return (
     <div className="chat-container">
@@ -39,7 +43,11 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile, socket }
           <Badge className="badge">
             {/* <Avatar size={35} /> */}
 
-            <Avatar src={userSelected?.avatarImage} size={35}>
+            <Avatar
+              style={{ backgroundColor: "rgba(148, 146, 146, 0.116)" }}
+              src={userSelected?.avatarImage}
+              size={35}
+            >
               {userSelected.displayName ? userSelected.displayName.charAt(0).toUpperCase() : "A"}{" "}
             </Avatar>
             <span
@@ -53,7 +61,8 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile, socket }
             <div
               style={{
                 fontSize: "0.6rem",
-                color: "rgba(0, 0, 0, 0.473)",
+                // color: "rgba(0, 0, 0, 0.473)",
+                color: "white",
               }}
             >
               {" "}
@@ -67,7 +76,6 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile, socket }
         </div>
       </div>
       <div className="chat-message">
-        <Message position="sended" />
         {Array.isArray(messages) && messages.length > 0 ? (
           messages.map((message: any) => {
             return (
@@ -81,6 +89,7 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile, socket }
         ) : (
           <h4>{`Hãy gửi lời chào đến ${userSelected?.displayName}`}</h4>
         )}
+        <div ref={messageEndRef}></div>
         {/* <Message position="sended" />
         <Message position="recieved" />
         <Message position="sended" />
