@@ -8,6 +8,7 @@ import useAction from "../../redux/useActions";
 import { AppContext } from "../../context/appContext";
 
 import LeftSidebar from "./left-sidebar/LeftSidebar";
+
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
   const actions = useAction();
@@ -15,7 +16,6 @@ const HomePage: React.FC = () => {
   const [spanConversation, setSpanConversation] = useState(17);
   const [spanLeftSidbar, setSpanLeftSideBar] = useState(window.innerWidth < 768 ? 0 : 1);
   const me = useSelector((state: any) => state.auth.userInfo);
-  const conversation = useSelector((state: any) => state.auth.conversation);
   const { socket, setMessages } = useContext(AppContext);
   useEffect(() => {
     socket.io.opts.query = { username: me?.username };
@@ -66,10 +66,7 @@ const HomePage: React.FC = () => {
     });
     dispatch(actions.AuthActions.setUserSelected(e));
   };
-  socket.off("start_chat").on("start_chat", (data: any) => {
-    dispatch(actions.AuthActions.setConversation(data));
-    setMessages(data.messages);
-  });
+
   return (
     <div className="home-page">
       <Row gutter={[0, 0]}>

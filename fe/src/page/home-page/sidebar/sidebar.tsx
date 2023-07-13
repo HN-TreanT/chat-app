@@ -29,7 +29,7 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
   const valueSearchFriend = useSelector((state: any) => state.auth.valueSearchFriend);
 
   const [page, setPage] = useState(2);
-  const [listfriend, setListFriend] = useState(friends);
+  // const [listfriend, setListFriend] = useState(friends);
   const [isOpenModelAddUser, setIsOpenModelAddUser] = useState(false);
   const [isOpenModelMail, setIsOpenModelMail] = useState(false);
   const [isOpenModelCreateGroup, setIsOpenModelCreateGroup] = useState(false);
@@ -41,6 +41,7 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
   useEffect(() => {
     dispatch(actions.AuthActions.setValueSearchFriend(searchValueDebounce));
     dispatch(actions.AuthActions.loadFriend());
+    setPage(2);
   }, [dispatch, actions.AuthActions, searchValueDebounce]);
   const handleChangeInputSearchEmail = (e: any) => {
     setValueSearchEamil(e.target.value);
@@ -58,6 +59,12 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
       setIsOpenModelMail(true);
       setSender(data?.user);
     }
+  });
+  socket.off("online").on("online", (data: any) => {
+    if (data.status === "online") dispatch(actions.AuthActions.loadFriend());
+  });
+  socket.off("offline").on("offline", (data: any) => {
+    if (data.status === "offline") dispatch(actions.AuthActions.loadFriend());
   });
   socket.off("accept_success").on("accept_success", (data: any) => {
     if (data === "success") {
@@ -94,7 +101,8 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
     if (e.target.scrollHeight - e.target.scrollTop < e.target.clientHeight + 1) {
       try {
         let data = await authServices.getFriends(me._id, page, 15, valueSearchFriend);
-        setListFriend([...listfriend, ...data.data]);
+        // setListFriend([...listfriend, ...data.data]);
+        dispatch(actions.AuthActions.loadFriendSuccess([...friends, ...data.data]));
         setPage(page + 1);
       } catch (e: any) {
         console.log(e);
@@ -239,8 +247,8 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
       </div>
       <div onScroll={handleScroll} className="list-friend">
         <div>
-          {Array.isArray(listfriend)
-            ? listfriend.map((friend: any) => {
+          {Array.isArray(friends)
+            ? friends.map((friend: any) => {
                 return (
                   <ItemFriend
                     key={friend?._id}

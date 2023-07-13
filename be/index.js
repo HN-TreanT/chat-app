@@ -6,6 +6,7 @@ const db = require("./config/index");
 const cors = require("cors");
 const User = require("./models/users");
 const Message = require("./models/messages");
+const { responseServerError } = require("./helper/ResponseRequests");
 // const { Server } = require("socket.io");
 // const http = require("http");
 require("dotenv").config();
@@ -56,9 +57,9 @@ const io = require("socket.io")(server, {
 
 io.on("connection", async (socket) => {
   const username = socket.handshake.query["username"];
-
+  let user;
   try {
-    const user = await User.findOneAndUpdate(
+    user = await User.findOneAndUpdate(
       {
         username: username,
       },
@@ -66,11 +67,17 @@ io.on("connection", async (socket) => {
         socket_id: socket.id,
         status: "Online",
       }
-    );
+    ).populate("friends");
   } catch (err) {
-    console.log(err);
+    return responseServerError({ res, err: err.message });
   }
-  //send request friend
+  if (Array.isArray(user?.friends)) {
+    user.friends.forEach((user) => {
+      if (user.socket_id) {
+        socket.to(user.socket_id).emit("online", { status: "online", friendId: user._id });
+      }
+    });
+  }
   socket.on("send_friendly_request", async function (data) {
     const { sender, recipient } = data;
     const userRecipient = await User.findById(recipient);
@@ -92,6 +99,8 @@ io.on("connection", async (socket) => {
     }
     await userSender.save({ new: true, validateModifiedOnly: true });
     await userRecipient.save({ new: true, validateModifiedOnly: true });
+    socket.emit("accept_success", "success");
+    socket.to(userSender.socket_id).emit("accept_success", "success");
   });
   socket.on("start_conversation", async function (data) {
     const { to, from } = data;
@@ -99,11 +108,11 @@ io.on("connection", async (socket) => {
     //check existing conversation
     const existing_conversations = await Message.find({
       participants: { $size: 2, $all: [to, from] },
-    });
+    }).select(["_id", "participants"]);
     if (existing_conversations.length === 0) {
       let new_chat = await Message.create({
         participants: [to, from],
-      });
+      }).select(["_id", "participants"]);
       socket.emit("start_chat", new_chat);
     } else {
       socket.emit("start_chat", existing_conversations[0]);
@@ -123,10 +132,6 @@ io.on("connection", async (socket) => {
     };
     conversation.messages.push(new_chat);
     await conversation.save({ new: true, validateModifiedOnly: true });
-    console.log({
-      conversation_id,
-      message: new_chat,
-    });
     // socket.to(to_user.socket_id).emit("new_message", {
     //   conversation_id,
     //   message: new_chat,
@@ -142,10 +147,26 @@ io.on("connection", async (socket) => {
   });
 
   ///socket off
-  // socket.on("disconnect", async function (data) {
-  //   await User.findByIdAndUpdate(user_id, {
-  //     status: "Offline",
-  //   });
-  //   console.log("user offline");
-  // });
+  socket.on("disconnect", async function (data) {
+    try {
+      user = await User.findOneAndUpdate(
+        {
+          username: username,
+        },
+        {
+          socket_id: socket.id,
+          status: "Offline",
+        }
+      ).populate("friends");
+    } catch (err) {
+      return responseServerError({ res, err: err.message });
+    }
+    if (Array.isArray(user?.friends)) {
+      user.friends.forEach((user) => {
+        if (user.socket_id) {
+          socket.to(user.socket_id).emit("offline", { status: "offline", friendId: user._id });
+        }
+      });
+    }
+  });
 });

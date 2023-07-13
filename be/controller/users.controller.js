@@ -1,4 +1,6 @@
 const User = require("../models/users");
+const mongoose = require("mongoose");
+const removeAccents = require("../helper/removeAccents");
 const {
   reponseSuccess,
   responseInValid,
@@ -6,6 +8,7 @@ const {
   responseSuccessWithData,
 } = require("../helper/ResponseRequests");
 const bcrypt = require("bcryptjs");
+const Message = require("../models/messages");
 const salt = bcrypt.genSaltSync(10);
 let hashUserPassword = (password) => {
   return new Promise(async (resolve, reject) => {
@@ -26,8 +29,12 @@ const getAll = async (req, res) => {
     pageSize = 1000;
     page = 1;
   }
-
-  const users = await User.find()
+  if (!req.query.search) {
+    req.query.search = "";
+  }
+  const users = await User.find({
+    displayName: new RegExp(req.query.search, "i"),
+  })
     .skip(pageSize * (page - 1))
     .limit(pageSize);
 
@@ -93,19 +100,42 @@ const login = async (req, res) => {
   }
 };
 const getListFriend = async (req, res) => {
-  let pageSize;
-  let page;
-  pageSize = req.query.pageSize;
-  page = req.query.page;
-  if (!req.query.pageSize || !req.query.page) {
-    pageSize = 1000;
-    page = 1;
+  try {
+    let pageSize;
+    let page;
+    pageSize = req.query.pageSize;
+    page = req.query.page;
+    if (!req.query.pageSize || !req.query.page) {
+      pageSize = 1000;
+      page = 1;
+    }
+    if (!req.query.search) {
+      req.query.search = "";
+    }
+
+    const conversations = await Message.find({
+      participants: mongoose.Types.ObjectId(req.query.id),
+    })
+      .sort({ updatedAt: -1 })
+      .skip(pageSize * (page - 1))
+      .limit(pageSize)
+      .populate("participants");
+    // Lấy danh sách người dùng từ danh sách tin nhắn
+    const users = conversations.flatMap((message) =>
+      message.participants.filter(
+        (participant) =>
+          String(participant._id) !== req.query.id &&
+          removeAccents(participant.displayName.toLowerCase()).includes(
+            removeAccents(req.query.search.toLowerCase())
+          )
+      )
+    );
+    return responseSuccessWithData({ res, data: users });
+  } catch (err) {
+    return responseServerError({ res, err: err.message });
   }
-  const friends = await User.find({ friends: req.query.id })
-    .skip(pageSize * (page - 1))
-    .limit(pageSize);
-  return responseSuccessWithData({ res, data: friends });
 };
+
 module.exports = {
   getAll,
   register,
