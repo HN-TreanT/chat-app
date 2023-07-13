@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import "react-notifications-component/dist/theme.css";
 import { store, persistor } from "./redux";
-import { Route, Routes, BrowserRouter, Navigate, Router } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import RouterLinks from "./const/router_link";
 import { ReactNotifications } from "react-notifications-component";
 import LoginPage from "./page/login-page/loginPage";

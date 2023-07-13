@@ -4,6 +4,7 @@ const types = {
   LOAD_FRIEND_SUCCESS: "auth/load_friend_success",
   CONVERSATION: "auth/convertion",
   USER_SELECTED: "auth/user_selected",
+  VALUE_SEARCH_FRIEND: "auth/value_search_friend",
 };
 const action = {
   setuserInfo: (data: any) => {
@@ -32,6 +33,12 @@ const action = {
   setConversation: (data: any) => {
     return {
       type: types.CONVERSATION,
+      payload: { data },
+    };
+  },
+  setValueSearchFriend: (data: any) => {
+    return {
+      type: types.VALUE_SEARCH_FRIEND,
       payload: { data },
     };
   },

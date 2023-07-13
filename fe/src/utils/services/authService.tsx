@@ -29,9 +29,9 @@ const getByEmail = (email: any) => {
     method: "GET",
   });
 };
-const getFriends = (id: any, page: any, pageSize: any) => {
+const getFriends = (id: any, page: any, pageSize: any, search: any) => {
   return api.makeRequest({
-    url: `/api/auth/getfriend/listFriend?id=${id}&page=${page}&pageSize=${pageSize}`,
+    url: `/api/auth/getfriend/listFriend?id=${id}&page=${page}&pageSize=${pageSize}&search=${search}`,
     method: "GET",
   });
 };

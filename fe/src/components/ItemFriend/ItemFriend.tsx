@@ -1,42 +1,30 @@
 import React from "react";
 import "./ItemFriend.scss";
-import { Avatar, Badge } from "antd";
+import { ChatCard } from "react-chat-engine-advanced";
+import { useSelector } from "react-redux";
+
 const ItemFriend: React.FC<any> = ({ friend, handleDetailConversation }) => {
-  const maxLength = 40; // Số ký tự tối đa trước khi hiển thị dấu chấm elipsis
-
-  const truncateText = (text: any) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substr(0, maxLength) + ".......";
-  };
-
+  const userSeletecd = useSelector((state: any) => state.auth.userSelected);
   return (
-    <div onClick={() => handleDetailConversation(friend)} className="item-friend">
-      <Badge className="badge">
-        {/* <Avatar size={35} /> */}
-        <Avatar style={{ backgroundColor: "rgba(148, 146, 146, 0.116)" }} size={35}>
-          {friend.displayName ? friend.displayName.charAt(0).toUpperCase() : "A"}{" "}
-        </Avatar>
-        <span
-          className={`status ${friend?.status === "Online" ? "status-online" : "status-offline"}`}
-          // className={`status status-online`}
-        />
-      </Badge>
-      <div className="text-status">
-        <div style={{ fontSize: "0.7rem", fontWeight: 550 }}>{friend?.displayName}</div>
-        <div
-          style={{
-            fontSize: "0.7rem",
-            color: "rgba(255, 255, 255, 0.466)",
-          }}
-        >
-          {" "}
-          {truncateText(
-            " Bạn:fbeyfgweuff7yuh323hrjnfejfyef298y28fefnefn2f829ey283y8y38fy83fyfefejfheufefufheufheufh"
-          )}
-        </div>
-      </div>
+    <div className="item-friend">
+      <ChatCard
+        // style={{ border: "1px solid blue !important" }}
+        className="chat-card"
+        onClick={() => handleDetailConversation(friend)}
+        title={`${friend?.displayName}`}
+        description={"Say hello!"}
+        avatarUrl={friend?.avatar}
+        avatarUsername={friend?.username}
+        avatarStyle={{
+          boxShadow:
+            friend?.status === "Online"
+              ? "rgb(24 144 255 / 35%) 0px 2px 7px"
+              : "rgb(245 34 45 / 35%) 0px 2px 7px",
+          border: friend?.status === "Online" ? "2px solid green" : "1px solid red",
+        }}
+        isActive={userSeletecd._id === friend._id}
+        // onClick={() => props.chat && props.onChatCardClick(props.chat.id)}
+      />
     </div>
   );
 };

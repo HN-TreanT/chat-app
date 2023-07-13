@@ -5,6 +5,7 @@ const initAuth = {
   listFriend: [],
   conversation: {},
   userSelected: {},
+  valueSearchFriend: "",
 };
 const AuthReducer = (state: any = initAuth, action: any) => {
   switch (action.type) {
@@ -38,6 +39,13 @@ const AuthReducer = (state: any = initAuth, action: any) => {
         ...state,
         ...{
           conversation: action.payload.data,
+        },
+      };
+    case actions.types.VALUE_SEARCH_FRIEND:
+      return {
+        ...state,
+        ...{
+          valueSearchFriend: action.payload.data,
         },
       };
     default:

@@ -19,7 +19,7 @@
 .sended {
    justify-content: flex-end;
    .content {
-     background-color:rgb(0, 132, 255);
+     background-color:var(--color-icon-and-message);
    }
 
  }
@@ -30,3 +30,4 @@
      background-color: rgba(148, 146, 146, 0.116);
    }
  }
+ 

@@ -35,9 +35,16 @@ function* saga_Redirect() {
 function* saga_loadFriends() {
   let _userInfo: Promise<any> = yield select((state: any) => state.auth.userInfo);
   let userInfo: any = _userInfo;
+  let _valueSearchFriend: Promise<any> = yield select((state: any) => state.auth.valueSearchFriend);
+  let valueSearchFriend: any = _valueSearchFriend;
   yield put(stateActions.action.loadingState(true));
 
-  let _friends: Promise<any> = yield authServices.getFriends(userInfo._id, 1, 10);
+  let _friends: Promise<any> = yield authServices.getFriends(
+    userInfo._id,
+    1,
+    15,
+    valueSearchFriend
+  );
   let friends: any = _friends;
   yield put(actions.action.loadFriendSuccess(friends.data));
   yield put(stateActions.action.loadingState(false));
