@@ -11,6 +11,7 @@ import RegisterPage from "./page/register-page/registerPage";
 import HomePage from "./page/home-page/HomePage";
 import { AuthorizationComponent } from "./components/authorization/AuthorizationComponent";
 import { socket, AppContext } from "./context/appContext";
+import RoomPage from "./page/home-page/chat-container/VideoCall/VideoCall";
 function App() {
   const [messages, setMessages] = useState([]);
   return (
@@ -31,6 +32,7 @@ function App() {
                     />
                     <Route path={RouterLinks.LOGIN_PAGE} element={<LoginPage />} />
                     <Route path={RouterLinks.REGISTER_PAGE} element={<RegisterPage />} />
+                    <Route path="/video-call" element={<RoomPage />} />
                   </Routes>
                 </div>
               </div>

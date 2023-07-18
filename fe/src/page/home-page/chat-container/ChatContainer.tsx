@@ -12,14 +12,18 @@ import * as uuid from "uuid";
 import "./ChatContainer.scss";
 import { messageService } from "../../../utils/services/messageService";
 import imgHello from "../../../assets/wave.png";
+import { useNavigate } from "react-router-dom";
+
 const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
   const dispatch = useDispatch();
   const actions = useAction();
+  const navigate = useNavigate();
   const { socket, messages, setMessages } = useContext(AppContext);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const userSelected = useSelector((state: any) => state.auth.userSelected);
   const conversation = useSelector((state: any) => state.auth.conversation);
   const loading = useSelector((state: any) => state.state.loadingState);
+
   const [isScrollTop, setIsScrolltop] = useState(false);
   const [page, setPage] = useState(2);
 
@@ -78,6 +82,10 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
     scrollToBottom();
   });
 
+  const handleRedirectVideoCall = () => {
+    return navigate("/video-call");
+  };
+
   return (
     <div className="chat-container">
       <div className="header-chat">
@@ -118,7 +126,12 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
         </div>
         <div className="other-method-conversation">
           <FontAwesomeIcon icon={faPhone} className="icon-method-conversation" />
-          <FontAwesomeIcon icon={faVideo} className="icon-method-conversation" />
+
+          <FontAwesomeIcon
+            onClick={handleRedirectVideoCall}
+            icon={faVideo}
+            className="icon-method-conversation"
+          />
         </div>
       </div>
       <div onScroll={handleScroll} className="chat-message">

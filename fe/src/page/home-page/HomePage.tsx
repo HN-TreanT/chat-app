@@ -6,7 +6,9 @@ import "./HomePage.scss";
 import { useSelector, useDispatch } from "react-redux";
 import useAction from "../../redux/useActions";
 import { AppContext } from "../../context/appContext";
-
+import ReactPlayer from "react-player";
+import Peer from "simple-peer";
+import VideoCall from "./chat-container/VideoCall/VideoCall";
 import LeftSidebar from "./left-sidebar/LeftSidebar";
 
 const HomePage: React.FC = () => {
@@ -17,6 +19,7 @@ const HomePage: React.FC = () => {
   const [spanLeftSidbar, setSpanLeftSideBar] = useState(window.innerWidth < 768 ? 0 : 1);
   const me = useSelector((state: any) => state.auth.userInfo);
   const { socket, setMessages } = useContext(AppContext);
+
   useEffect(() => {
     socket.io.opts.query = { username: me?.username };
     socket.disconnect();

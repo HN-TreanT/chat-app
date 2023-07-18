@@ -55,6 +55,11 @@ const io = require("socket.io")(server, {
   },
 });
 
+///
+const users = {};
+
+const socketToRoom = {};
+
 io.on("connection", async (socket) => {
   const username = socket.handshake.query["username"];
   let user;
@@ -114,8 +119,14 @@ io.on("connection", async (socket) => {
         participants: [to, from],
       }).select(["_id", "participants"]);
       socket.emit("start_chat", new_chat);
+      ///test
+      socket.join(new_chat._id);
+      //////
     } else {
       socket.emit("start_chat", existing_conversations[0]);
+      ///tets
+      socket.join(existing_conversations[0]._id);
+      /////
     }
   });
   socket.on("send_message", async function (data) {
@@ -132,10 +143,7 @@ io.on("connection", async (socket) => {
     };
     conversation.messages.push(new_chat);
     await conversation.save({ new: true, validateModifiedOnly: true });
-    // socket.to(to_user.socket_id).emit("new_message", {
-    //   conversation_id,
-    //   message: new_chat,
-    // });
+
     socket.emit("new_message", {
       conversation_id,
       message: new_chat,
@@ -145,6 +153,18 @@ io.on("connection", async (socket) => {
       message: new_chat,
     });
   });
+  //////////////////////////////etsttttt
+
+  socket.on("callUser", async (data) => {
+    const userToCall = await User.findById(data.userToCall);
+    io.to(userToCall.socket_id).emit("hey", { signal: data.signal, from: data.userCall });
+  });
+
+  socket.on("acceptCall", async (data) => {
+    const user = await User.findById(data.to);
+    io.to(user.socket_id).emit("callAccepted", data.signal);
+  });
+  ///////////////////////////////////
 
   ///socket off
   socket.on("disconnect", async function (data) {
