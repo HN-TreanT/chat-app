@@ -7,6 +7,7 @@ const cors = require("cors");
 const User = require("./models/users");
 const Message = require("./models/messages");
 const { responseServerError } = require("./helper/ResponseRequests");
+const VideoCall = require("./models/videoCall");
 // const { Server } = require("socket.io");
 // const http = require("http");
 require("dotenv").config();
@@ -56,9 +57,7 @@ const io = require("socket.io")(server, {
 });
 
 ///
-const users = {};
-
-const socketToRoom = {};
+const rooms = {};
 
 io.on("connection", async (socket) => {
   const username = socket.handshake.query["username"];
@@ -153,18 +152,44 @@ io.on("connection", async (socket) => {
       message: new_chat,
     });
   });
-  //////////////////////////////etsttttt
-
-  socket.on("callUser", async (data) => {
-    const userToCall = await User.findById(data.userToCall);
-    io.to(userToCall.socket_id).emit("hey", { signal: data.signal, from: data.userCall });
+  //////////////////////////////video calll
+  socket.on("calling", async function (data) {
+    const caller = await User.findById(data.caller);
+    const reciever = await User.findById(data.reciever);
+    socket.to(reciever.socket_id).emit("hey", {
+      roomId: data.roomId,
+      caller: caller,
+    });
+  });
+  socket.on("join room", (roomID) => {
+    if (rooms[roomID]) {
+      rooms[roomID].push(socket.id);
+    } else {
+      rooms[roomID] = [socket.id];
+    }
+    const otherUser = rooms[roomID].find((id) => id !== socket.id);
+    if (otherUser) {
+      socket.emit("other user", otherUser);
+      socket.to(otherUser).emit("user joined", socket.id);
+    }
   });
 
-  socket.on("acceptCall", async (data) => {
-    const user = await User.findById(data.to);
-    io.to(user.socket_id).emit("callAccepted", data.signal);
+  socket.on("offer", (payload) => {
+    io.to(payload.target).emit("offer", payload);
   });
-  ///////////////////////////////////
+
+  socket.on("answer", (payload) => {
+    io.to(payload.target).emit("answer", payload);
+  });
+
+  socket.on("ice-candidate", (incoming) => {
+    io.to(incoming.target).emit("ice-candidate", incoming.candidate);
+  });
+
+  socket.on("finish-call", async (data) => {
+    const user = await User.findById(data.userCalling);
+    socket.to(user.socket_id).emit("finish-success", "success");
+  });
 
   ///socket off
   socket.on("disconnect", async function (data) {

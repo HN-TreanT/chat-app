@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Message from "../../../components/Message/Message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone, faVideo, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { Avatar, Badge, Spin, Image } from "antd";
+import { faPhone, faVideo, faArrowLeft, faCancel } from "@fortawesome/free-solid-svg-icons";
+import { Avatar, Badge, Spin, Image, Modal } from "antd";
 import InputChat from "./InputChat/InputChat";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -23,8 +23,11 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
   const userSelected = useSelector((state: any) => state.auth.userSelected);
   const conversation = useSelector((state: any) => state.auth.conversation);
   const loading = useSelector((state: any) => state.state.loadingState);
+  const roomId = useSelector((state: any) => state.videocall.roomId);
 
   const [isScrollTop, setIsScrolltop] = useState(false);
+  const [isOpenModalAcceptCall, setIsOpenModalAcceptCall] = useState(false);
+  const [infoUserCall, setInfoUserCall] = useState<any>();
   const [page, setPage] = useState(2);
 
   const messageEndRef = useRef<any>(null);
@@ -81,13 +84,60 @@ const ChatContainer: React.FC<any> = ({ handleBackListFriend, isMobile }) => {
     setPage(2);
     scrollToBottom();
   });
-
+  socket.off("hey").on("hey", (data: any) => {
+    setInfoUserCall(data.caller);
+    dispatch(actions.VideoCallActions.setUserCalling(data.caller));
+    dispatch(actions.VideoCallActions.setRoomId(data.roomId));
+    setIsOpenModalAcceptCall(true);
+  });
   const handleRedirectVideoCall = () => {
-    return navigate("/video-call");
+    const id = uuid.v4();
+    socket.emit("calling", {
+      roomId: id,
+      caller: userInfo._id,
+      reciever: userSelected._id,
+    });
+    dispatch(actions.VideoCallActions.setUserCalling(userSelected));
+    dispatch(actions.VideoCallActions.setRoomId(id));
+    return navigate(`/video-call/${id}`);
+  };
+
+  const handleAcceptCall = () => {
+    return navigate(`/video-call/${roomId}`);
   };
 
   return (
     <div className="chat-container">
+      <Modal
+        title="Có người gọi đến"
+        open={isOpenModalAcceptCall}
+        onCancel={() => setIsOpenModalAcceptCall(false)}
+        footer={null}
+        width={400}
+      >
+        <div className="content-modal-call-accept">
+          <div className="modal-info-user-call">
+            <Avatar
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.295)" }}
+              src={infoUserCall?.avatarImage}
+              size={40}
+            >
+              {infoUserCall?.displayName ? infoUserCall.displayName.charAt(0).toUpperCase() : "A"}{" "}
+            </Avatar>
+            <div style={{ fontSize: "1rem" }}>
+              {infoUserCall?.displayName ? infoUserCall?.displayName : "Người gọi"}
+            </div>
+          </div>
+          <div className="modal-icon-control-call">
+            <FontAwesomeIcon className="icon-control-call icon-cancel " icon={faCancel} />
+            <FontAwesomeIcon
+              onClick={handleAcceptCall}
+              className="icon-control-call icon-accept "
+              icon={faPhone}
+            />
+          </div>
+        </div>
+      </Modal>
       <div className="header-chat">
         <div className="user-conversation">
           {isMobile ? (

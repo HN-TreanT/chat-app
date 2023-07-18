@@ -107,4 +107,60 @@
       flex: 0 0 auto;
 
     }
+   
+  
+    
+   
+}
+
+ 
+.content-modal-call-accept{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  
+ .modal-info-user-call{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+ }
+ .modal-icon-control-call{
+  display: flex;
+  justify-content:center;
+   align-items: center;
+  .icon-control-call{
+    font-size: 1.5rem;
+    padding: 15px;
+    color: white;
+    margin-right: 15px;
+    margin-left: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+  } 
+  .icon-accept{
+    background-color: green;
+    animation: ring 0.5s linear 0s infinite;
+    @keyframes ring {
+      0%{
+        transform: rotate(20deg);
+      }
+      50%{
+        transform: rotate(-20deg);
+      }
+      100%{
+        transform: rotate(20deg);
+      }
+      
+    }
+  
+  }
+  .icon-cancel{
+    background-color: red;
+  }
+ }
+
 }

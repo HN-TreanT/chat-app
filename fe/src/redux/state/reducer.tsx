@@ -49,6 +49,13 @@ const StateReducer = (state: any = initState, action: any) => {
         ...state,
         socket: action.payload.socket,
       };
+    case actions.types.ACCEPT_CALL:
+      return {
+        ...state,
+        ...{
+          acceptCall: action.payload.data,
+        },
+      };
     default:
       return state;
   }

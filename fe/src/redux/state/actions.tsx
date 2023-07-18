@@ -8,6 +8,7 @@ const types = {
   SET_NAVIGATE: "/set-navigate",
   REDIRECT_ACTION: "/redirect-action",
   INIT_SOCKET: "/init-socket",
+  ACCEPT_CALL: "accept-call",
 };
 
 const action = {
@@ -50,6 +51,12 @@ const action = {
     return {
       type: types.INIT_SOCKET,
       payload: { socket: io(serverConfig.server) },
+    };
+  },
+  acceptCall: (data: any) => {
+    return {
+      type: types.ACCEPT_CALL,
+      payload: { data },
     };
   },
 };
