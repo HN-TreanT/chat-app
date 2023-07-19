@@ -7,7 +7,7 @@ import "./LeftSidebar.scss";
 import RouterLinks from "../../../const/router_link";
 import { useNavigate } from "react-router-dom";
 
-const LeftSidebar: React.FC = () => {
+const LeftSidebar: React.FC<any> = ({ handleOpenDrawer }) => {
   const navigate = useNavigate();
   const me = useSelector((state: any) => state.auth.userInfo);
   const handleLogout = () => {
@@ -19,7 +19,12 @@ const LeftSidebar: React.FC = () => {
       <div className="naviagtion"></div>
       <div className="info-user">
         <Avatar
-          style={{ backgroundColor: "rgba(148, 146, 146, 0.116)", border: "2px solid green" }}
+          onClick={handleOpenDrawer}
+          style={{
+            backgroundColor: "rgba(148, 146, 146, 0.116)",
+            border: "2px solid green",
+            cursor: "pointer",
+          }}
           src={me?.avatarImage}
           size={47}
         >

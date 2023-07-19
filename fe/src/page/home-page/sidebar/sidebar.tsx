@@ -17,7 +17,7 @@ import RouterLinks from "../../../const/router_link";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../../../hooks/useDebounce";
 
-const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
+const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile, handleOpenDrawer }) => {
   const { socket } = useContext(AppContext);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -266,6 +266,7 @@ const Sidebar: React.FC<any> = ({ handleDetailConversation, isMobile }) => {
         <div className="footer-sidebar">
           <div>
             <Avatar
+              onClick={handleOpenDrawer}
               style={{ backgroundColor: "rgba(148, 146, 146, 0.116)" }}
               src={me?.avatarImage}
               size={33}

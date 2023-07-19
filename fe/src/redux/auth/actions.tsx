@@ -1,5 +1,6 @@
 const types = {
   USER_INFO: "auth/user_info",
+  LOAD_USER_INFO: "auth/load_user_info",
   LOAD_FRIEND: "auth/load_friend",
   LOAD_FRIEND_SUCCESS: "auth/load_friend_success",
   CONVERSATION: "auth/convertion",
@@ -40,6 +41,11 @@ const action = {
     return {
       type: types.VALUE_SEARCH_FRIEND,
       payload: { data },
+    };
+  },
+  loadUserInfo: () => {
+    return {
+      type: types.LOAD_USER_INFO,
     };
   },
 };

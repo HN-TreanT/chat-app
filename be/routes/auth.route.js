@@ -39,7 +39,6 @@ router.get(
     })(req, res, next);
   },
   (req, res) => {
-    console.log(req.user);
     res.redirect(
       `${process.env.URL_CLIENT}/login-gg-fb/${req.user.id}@gmail.com/${req.user.tokenLogin}`
     );

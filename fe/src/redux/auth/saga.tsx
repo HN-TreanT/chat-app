@@ -50,12 +50,26 @@ function* saga_loadFriends() {
   yield put(stateActions.action.loadingState(false));
 }
 
+function* saga_loadUserInfo() {
+  let _userInfo: Promise<any> = yield select((state: any) => state.auth.userInfo);
+  let userInfo: any = _userInfo;
+  yield put(stateActions.action.loadingState(true));
+  let _me: Promise<any> = yield authServices.getByEmail(userInfo.email);
+  let me: any = _me;
+  yield put(stateActions.action.loadingState(false));
+  if (me.status) {
+    yield put(actions.action.setuserInfo(me.data));
+  } else {
+    yield put(actions.action.setuserInfo(userInfo));
+  }
+}
 function* saga_RedirectAction() {
   yield saga_Redirect();
 }
 function* listen() {
   //  yield takeEvery(actions.types.LOAD_DATA, saga_loadData);
   yield takeEvery(actions.types.LOAD_FRIEND, saga_loadFriends);
+  yield takeEvery(actions.types.LOAD_USER_INFO, saga_loadUserInfo);
 }
 
 export default function* mainSaga() {

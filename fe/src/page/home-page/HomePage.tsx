@@ -7,10 +7,12 @@ import { useSelector, useDispatch } from "react-redux";
 import useAction from "../../redux/useActions";
 import { AppContext } from "../../context/appContext";
 import LeftSidebar from "./left-sidebar/LeftSidebar";
+import DrawerInfoUser from "../../components/drawerInfoUser/DrawerInfoUser";
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
   const actions = useAction();
+  const [visibleDrawer, setVisibleDrawer] = useState<any>(false);
   const [colSpan, setColSpan] = useState(window.innerWidth < 768 ? 24 : 6);
   const [spanConversation, setSpanConversation] = useState(17);
   const [spanLeftSidbar, setSpanLeftSideBar] = useState(window.innerWidth < 768 ? 0 : 1);
@@ -47,9 +49,6 @@ const HomePage: React.FC = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  // useEffect(() => {
-  //   setMessages(conversation?.messages);
-  // }, [conversation?.messages, setMessages]);
   const handleBackListFriend = () => {
     setColSpan(24);
     setSpanConversation(17);
@@ -67,14 +66,21 @@ const HomePage: React.FC = () => {
     dispatch(actions.AuthActions.setUserSelected(e));
   };
 
+  const handleOpenDrawer = () => {
+    // dispatch(actions.AuthActions.loadUserInfo());
+    setVisibleDrawer(true);
+  };
+
   return (
     <div className="home-page">
+      <DrawerInfoUser visible={visibleDrawer} setVisible={setVisibleDrawer} />
       <Row gutter={[0, 0]}>
         <Col span={spanLeftSidbar}>
-          <LeftSidebar />
+          <LeftSidebar handleOpenDrawer={handleOpenDrawer} />
         </Col>
         <Col span={colSpan}>
           <Sidebar
+            handleOpenDrawer={handleOpenDrawer}
             isMobile={window.innerWidth < 768}
             handleDetailConversation={handleDetailConversation}
             socket={socket}
