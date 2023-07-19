@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
       });
     }
   };
-  const handleLoginWithGG = (type: any) => {
+  const handleLoginWithGGFB = (type: any) => {
     window.open(`${serverConfig.server}/api/auth/${type}`, "_self");
   };
 
@@ -99,10 +99,13 @@ const LoginPage: React.FC = () => {
         <Divider style={{ borderBlock: "black" }}>Or login with </Divider>
         <div className="socialLogin">
           <GoogleOutlined
-            onClick={() => handleLoginWithGG("google")}
+            onClick={() => handleLoginWithGGFB("google")}
             style={{ color: "red", cursor: "pointer" }}
           />
-          <FacebookFilled style={{ color: "#1876F2", cursor: "pointer" }} />
+          <FacebookFilled
+            onClick={() => handleLoginWithGGFB("facebook")}
+            style={{ color: "#1876F2", cursor: "pointer" }}
+          />
         </div>
       </Form>
     </div>

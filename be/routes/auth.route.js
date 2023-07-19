@@ -7,6 +7,8 @@ const {
 const User = require("../models/users");
 const passport = require("passport");
 require("dotenv").config();
+
+///route google
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 router.get(
@@ -19,12 +21,32 @@ router.get(
   },
   (req, res) => {
     res.redirect(
-      `${process.env.URL_CLIENT}/login-gg/${req.user.emails[0].value}/${req.user.tokenLogin}`
+      `${process.env.URL_CLIENT}/login-gg-fb/${req.user.emails[0].value}/${req.user.tokenLogin}`
     );
   }
 );
 
-router.post("/login-gg", async (req, res) => {
+//route facebook
+
+router.get("/facebook", passport.authenticate("facebook", { session: false }));
+
+router.get(
+  "/facebook/callback",
+  (req, res, next) => {
+    passport.authenticate("facebook", (err, profile) => {
+      req.user = profile;
+      next();
+    })(req, res, next);
+  },
+  (req, res) => {
+    console.log(req.user);
+    res.redirect(
+      `${process.env.URL_CLIENT}/login-gg-fb/${req.user.id}@gmail.com/${req.user.tokenLogin}`
+    );
+  }
+);
+
+router.post("/login-gg-fb", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 

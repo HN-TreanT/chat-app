@@ -38,7 +38,7 @@ const getFriends = (id: any, page: any, pageSize: any, search: any) => {
 
 const loginwithGGorFB = (data: any) => {
   return api.makeRequest({
-    url: "/api/auth/login-gg",
+    url: "/api/auth/login-gg-fb",
     method: "POST",
     data: data,
   });

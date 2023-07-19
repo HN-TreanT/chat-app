@@ -4,9 +4,9 @@ import { authServices } from "../../utils/services/authService";
 import { useNavigate } from "react-router-dom";
 import RouterLinks from "../../const/router_link";
 import { AppContext } from "../../context/appContext";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import useAction from "../../redux/useActions";
-const LoginGG: React.FC<any> = () => {
+const LoginGGFB: React.FC<any> = () => {
   const { socket } = useContext(AppContext);
   const { email, tokenLogin } = useParams();
   const navigate = useNavigate();
@@ -36,6 +36,21 @@ const LoginGG: React.FC<any> = () => {
     }
     handlLoginWithGGorFB();
   }, [actions.AuthActions, actions.StateAction, dispatch, email, navigate, socket, tokenLogin]);
-  return <div>login gg fb</div>;
+  return (
+    <div
+      style={{
+        fontSize: "1.5rem",
+        fontWeight: "600",
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "2rem",
+        alignItems: "center",
+      }}
+    >
+      Đang đăng nhập .....
+    </div>
+  );
 };
-export default LoginGG;
+export default LoginGGFB;
