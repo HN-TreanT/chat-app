@@ -7,10 +7,12 @@ const cors = require("cors");
 const User = require("./models/users");
 const Message = require("./models/messages");
 const { responseServerError } = require("./helper/ResponseRequests");
+const authRoute = require("./routes/auth.route");
 const VideoCall = require("./models/videoCall");
 // const { Server } = require("socket.io");
 // const http = require("http");
 require("dotenv").config();
+require("./passport");
 const port = process.env.PORT || 3000;
 const app = express();
 // const server = http.createServer(app);
@@ -103,6 +105,14 @@ io.on("connection", async (socket) => {
     }
     await userSender.save({ new: true, validateModifiedOnly: true });
     await userRecipient.save({ new: true, validateModifiedOnly: true });
+    const existing_conversations = await Message.find({
+      participants: { $size: 2, $all: [userSender._id, userRecipient._id] },
+    });
+    if (existing_conversations.length === 0) {
+      await Message.create({
+        participants: [userSender._id, userRecipient._id],
+      });
+    }
     socket.emit("accept_success", "success");
     socket.to(userSender.socket_id).emit("accept_success", "success");
   });

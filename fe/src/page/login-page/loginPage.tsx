@@ -57,6 +57,9 @@ const LoginPage: React.FC = () => {
       });
     }
   };
+  const handleLoginWithGG = (type: any) => {
+    window.open(`${serverConfig.server}/api/auth/${type}`, "_self");
+  };
 
   return (
     <div className="login-page">
@@ -95,7 +98,10 @@ const LoginPage: React.FC = () => {
         <Link to={RouterLinks.REGISTER_PAGE}>Đăng ký?</Link>
         <Divider style={{ borderBlock: "black" }}>Or login with </Divider>
         <div className="socialLogin">
-          <GoogleOutlined style={{ color: "red", cursor: "pointer" }} />
+          <GoogleOutlined
+            onClick={() => handleLoginWithGG("google")}
+            style={{ color: "red", cursor: "pointer" }}
+          />
           <FacebookFilled style={{ color: "#1876F2", cursor: "pointer" }} />
         </div>
       </Form>

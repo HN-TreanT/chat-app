@@ -48,6 +48,7 @@ const AuthReducer = (state: any = initAuth, action: any) => {
           valueSearchFriend: action.payload.data,
         },
       };
+
     default:
       return state;
   }

@@ -3,14 +3,14 @@ const api = createApiService();
 
 const handleLogin = (loginInfo: any) => {
   return api.makeRequest({
-    url: "/api/auth/login",
+    url: "/api/user/login",
     method: "POST",
     data: loginInfo,
   });
 };
 const handleRegister = (data: any) => {
   return api.makeRequest({
-    url: "/api/auth/register",
+    url: "/api/user/register",
     method: "POST",
     data,
   });
@@ -18,21 +18,29 @@ const handleRegister = (data: any) => {
 
 const getAll = (page: any, pageSize: any) => {
   return api.makeRequest({
-    url: `/api/auth?page=${page}&pageSize=${pageSize}`,
+    url: `/api/user?page=${page}&pageSize=${pageSize}`,
     method: "GET",
   });
 };
 
 const getByEmail = (email: any) => {
   return api.makeRequest({
-    url: `/api/auth/${email}`,
+    url: `/api/user/${email}`,
     method: "GET",
   });
 };
 const getFriends = (id: any, page: any, pageSize: any, search: any) => {
   return api.makeRequest({
-    url: `/api/auth/getfriend/listFriend?id=${id}&page=${page}&pageSize=${pageSize}&search=${search}`,
+    url: `/api/user/getfriend/listFriend?id=${id}&page=${page}&pageSize=${pageSize}&search=${search}`,
     method: "GET",
+  });
+};
+
+const loginwithGGorFB = (data: any) => {
+  return api.makeRequest({
+    url: "/api/auth/login-gg",
+    method: "POST",
+    data: data,
   });
 };
 
@@ -42,4 +50,5 @@ export const authServices = {
   getAll,
   getByEmail,
   getFriends,
+  loginwithGGorFB,
 };
