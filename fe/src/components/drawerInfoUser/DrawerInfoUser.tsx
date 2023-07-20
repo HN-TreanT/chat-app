@@ -3,11 +3,12 @@ import { Drawer, Row, Col, Button, Typography } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import useAction from "../../redux/useActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { CheckOutlined, HighlightOutlined } from "@ant-design/icons";
 
 import "./DrawerInfoUser.scss";
 import Avatar from "react-avatar-edit";
+import { authServices } from "../../utils/services/authService";
 
 const DrawerInfoUser: React.FC<any> = ({ visible, setVisible }) => {
   const dispatch = useDispatch();
@@ -18,10 +19,10 @@ const DrawerInfoUser: React.FC<any> = ({ visible, setVisible }) => {
   const [displayName, setDisplayName] = useState<any>(me?.displayName);
   const [imgCrop, setImgCrop] = useState<any>(false);
   const [storeImage, setStoreImage] = useState<any>([]);
-
   // useEffect(() => {
   //   dispatch(actions.AuthActions.loadUserInfo());
   // }, [actions.AuthActions, dispatch]);
+
   const onCrop = (view: any) => {
     setImgCrop(view);
   };
@@ -34,17 +35,42 @@ const DrawerInfoUser: React.FC<any> = ({ visible, setVisible }) => {
   };
 
   const profileImageShow = storeImage.map((item: any) => item.imgCrop);
+  const handleCloseDrawer = () => {
+    setImgCrop(null);
+    setVisible(false);
+    setDisplayName(me?.displayName);
+    setStoreImage([]);
+  };
+  const handleSaveChange = async () => {
+    try {
+      const data = await authServices.editUser({
+        id: me._id,
+        displayName: displayName,
+        avatarImage: profileImageShow[0],
+      });
+      if (data.status) {
+        dispatch(actions.AuthActions.setuserInfo(data.data));
+        setVisible(false);
+      }
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
   return (
     <>
       <Drawer
-        extra={<FontAwesomeIcon className="icon-edit" icon={faPenToSquare} />}
+        extra={<FontAwesomeIcon className="icon-edit" icon={faClose} onClick={handleCloseDrawer} />}
         placement="left"
-        onClose={() => {
-          setImgCrop(null);
-          setVisible(false);
-          setDisplayName(me?.displayName);
-        }}
+        onClose={handleCloseDrawer}
         open={visible}
+        footer={
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button onClick={handleSaveChange} type="primary">
+              Lưu thay đổi
+            </Button>
+          </div>
+        }
+        closeIcon={null}
       >
         <div className="drawer-info-user">
           <Row gutter={[10, 10]}>

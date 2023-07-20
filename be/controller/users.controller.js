@@ -40,6 +40,25 @@ const getAll = async (req, res) => {
 
   return responseSuccessWithData({ res, data: users });
 };
+
+const editUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params._id);
+    if (!user) {
+      return responseInValid({ res, message: "user not found" });
+    }
+    if (req.body.displayName) {
+      user.displayName = req.body.displayName;
+    }
+    if (req.body.avatarImage) {
+      user.avatarImage = req.body.avatarImage;
+    }
+    await user.save();
+    return responseSuccessWithData({ res, data: user });
+  } catch (err) {
+    return responseServerError({ res, err: err.message });
+  }
+};
 const getUserById = async (req, res) => {
   const users = await User.findOne({
     email: req.params.email,
@@ -142,4 +161,5 @@ module.exports = {
   login,
   getUserById,
   getListFriend,
+  editUser,
 };

@@ -23,6 +23,14 @@ const getAll = (page: any, pageSize: any) => {
   });
 };
 
+const editUser = (data: any) => {
+  return api.makeRequest({
+    url: `/api/user/${data.id}`,
+    method: "PUT",
+    data: data,
+  });
+};
+
 const getByEmail = (email: any) => {
   return api.makeRequest({
     url: `/api/user/${email}`,
@@ -51,4 +59,5 @@ export const authServices = {
   getByEmail,
   getFriends,
   loginwithGGorFB,
+  editUser,
 };
